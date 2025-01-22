@@ -1,9 +1,4 @@
-import pandas as pd
-import string
-import general_functions as gf
-import re
-import os
-from task1 import *
+from task1.task1 import *
 
 class SequenceCounter:
     """
@@ -11,9 +6,9 @@ class SequenceCounter:
     """
     def __init__(self,
                  sentences_file_path:str,
-                 remove_words_file_path:str,
-                 is_processes:bool,
-                 k:int):
+                 remove_words_file_path: str = None,
+                 is_processes:bool = False,
+                 k:int = 1):
         """ docstring"""
 
         self.seq_num = k
