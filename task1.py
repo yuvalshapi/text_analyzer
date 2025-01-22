@@ -5,111 +5,165 @@ import json
 import pandas as pd
 import general_functions as gf
 
+
 class TextPreprocessor:
     """
-    A class which used to make the preparations on the input text.
-    The class parses the input paths and change the input data according to the various inputs
+    A class used to preprocess and prepare input text data for further analysis.
+    The class supports reading input data, processing sentences, cleaning names,
+    and removing unwanted words. Outputs are structured in a JSON format.
     """
+
     def __init__(self,
-                 sentences_file_path:str,
-                 name_file_path:str,
-                 common_words_file_path:str,
-                 prog_num:int):
+                 sentences_file_path: str,
+                 name_file_path: str = None,
+                 common_words_file_path: str = None,
+                 prog_num: int = 1):
         """
-        A constructor for a TextPreprocessor object.
-        :param sentences_file_path: A string holding the path to the actual "data" file.
-        :param name_file_path: A string holding the path to the list of the names file.
-        :param common_words_file_path: A string holding the path to the  common words file we should remove.
-        :param prog_num: An integer that represents the program number output is expected.
+        Initializes the TextPreprocessor class with input file paths and optional parameters.
+
+        :param sentences_file_path: Path to the input sentences file.
+        :param name_file_path: (Optional) Path to the file containing names data.
+        :param common_words_file_path: (Optional) Path to the file containing common words to remove.
+        :param prog_num: (Optional) An integer representing the task/question number. Default is 1.
         """
+        # Load the sentences data from the provided file path
         self.sentences_data = pd.read_csv(sentences_file_path)
-        #Converting the sentences from DF
+
+        # Extract the first column as the list of sentences
         self.sentences_list = self.sentences_data[self.sentences_data.columns[0]].tolist()
-        self.people_names_data = pd.read_csv(name_file_path)
-        self.other_names_list  = self.people_names_data[self.people_names_data.columns[0]].tolist()
-        self.names_list = self.people_names_data[self.people_names_data.columns[1]].tolist()
-        self.common_words = pd.read_csv(common_words_file_path)
-        self.words_to_remove = self.common_words[self.common_words.columns[0]].dropna().str.strip().tolist()
+
+        # If a names file is provided, load and process it
+        if name_file_path:
+            self.people_names_data = pd.read_csv(name_file_path)
+
+            # Extract 'Name' and 'Other Names' columns
+            self.other_names_list = self.people_names_data[self.people_names_data.columns[0]].tolist()
+            self.names_list = self.people_names_data[self.people_names_data.columns[1]].tolist()
+        else:
+            # Initialize empty structures if no names file is provided
+            self.people_names_data = None
+            self.other_names_list = []
+            self.names_list = []
+
+        # If a common words file is provided, load and process it
+        if common_words_file_path:
+            self.common_words = pd.read_csv(common_words_file_path)
+
+            # Extract the list of words to remove from the first column
+            self.words_to_remove = self.common_words[self.common_words.columns[0]].dropna().str.strip().tolist()
+        else:
+            # Initialize an empty list if no common words file is provided
+            self.common_words = None
+            self.words_to_remove = []
+
+        # Store the program number for output formatting
         self.prog_num = prog_num
-        self._process_names()
+
+        # Automatically process names and sentences if optional files are provided
+        if self.people_names_data is not None and not self.people_names_data.empty:
+            self._process_names()
         self._process_data_inputs()
+
+    def get_processed_sentences(self):
+        """
+        Retrieves the processed sentences as a list of lists.
+
+        :return: List of processed sentences, where each sentence is represented as a list of words.
+        """
+        return self.sentences_list
+
+    def get_processed_names(self):
+        """
+        Retrieves the processed names as a list.
+
+        :return: List of cleaned and processed names.
+        """
+        return self.names_list
 
     def _process_data_inputs(self):
         """
-        Function which gets a TextPreprocessor object and processes it:
-        1. Splitting the data according to new lines.
-        2. Removing all punctuation.
-        3. Converting all to lower case.
-        4. Removing all common words.
+        Processes the input sentences by performing the following steps:
+        1. Splits sentences by new lines.
+        2. Removes empty sentences.
+        3. Cleans sentences (removes punctuation, converts to lowercase).
+        4. Converts sentences into lists of words.
+        5. Removes common words from the sentences.
+        6. Removes any resulting empty lists.
         """
-        # Splitting the strings by new lines
+        # Split sentences into smaller strings based on new line characters
         self.sentences_list = [item for s in self.sentences_list for item in s.split("\n")]
 
-        # Remove empty sentences from the list (action 'i')
+        # Remove any empty strings caused by splitting or blank lines in the input
         self.sentences_list = [s for s in self.sentences_list if s.strip()]
 
-        # Clean the text
+        # Clean each sentence by removing punctuation, extra spaces, and converting to lowercase
         self.sentences_list = [gf.clean_text(text) for text in self.sentences_list]
 
-        # Splitting the string into lists of words, making sentences become lists of lists ('h)
+        # Split cleaned sentences into lists of words
         self.sentences_list = [sentence.split() for sentence in self.sentences_list]
 
-        # Remove common words
+        # Remove common words (e.g., stop words) from the sentences
         self.sentences_list = gf.remove_words(self.sentences_list, self.words_to_remove)
 
-        # Remove any empty lists
+        # Remove any empty lists caused by removing all words from a sentence
         self.sentences_list = [s for s in self.sentences_list if s]
 
     def _process_names(self):
         """
-        Processes the names and other names:
+        Processes names and other names by performing the following steps:
         1. Cleans and removes duplicates while preserving the original structure of the DataFrame.
-        2. Processes the 'Name' and 'Other Names' columns by splitting and converting them to lists of words.
-        3. Ensures `names` and `other names` are stored as two separate lists.
-        4. Groups multiple "other names" into separate lists.
+        2. Splits the 'Name' and 'Other Names' columns into lists of words.
+        3. Separates 'names' and 'other names' into distinct lists.
+        4. Removes unwanted words from the names and other names.
         """
-        # Clean and process 'Name' column into a list of words
+        # Clean and split the 'Name' column into lists of words
         self.people_names_data[self.people_names_data.columns[0]] = (
             self.people_names_data[self.people_names_data.columns[0]]
-            .dropna()
+            .dropna()  # Remove any null values
             .apply(lambda x: gf.clean_text(x.strip()).split())  # Clean and split into words
         )
 
-        # Clean and process 'Other Names' column into lists of words
+        # Clean and split the 'Other Names' column into lists of lists of words
         self.people_names_data[self.people_names_data.columns[1]] = (
             self.people_names_data[self.people_names_data.columns[1]]
-            .fillna("")
+            .fillna("")  # Replace null values with empty strings
             .apply(lambda x: [gf.clean_text(name.strip()).split() for name in x.split(",") if name.strip()])
-        # Split names and words
         )
 
-        # Separate 'Name' and 'Other Names' into distinct lists
+        # Extract processed 'Name' and 'Other Names' columns into separate lists
         self.names_list = self.people_names_data[self.people_names_data.columns[0]].tolist()
         self.other_names_list = self.people_names_data[self.people_names_data.columns[1]].tolist()
 
-        # Remove common words
+        # Remove common words from the 'names' list
         self.names_list = gf.remove_words(self.names_list, self.words_to_remove)
+
+        # Remove common words from the 'other names' list
         self.other_names_list = gf.remove_words(self.other_names_list, self.words_to_remove)
 
     def __str__(self):
         """
-        print the object ath the format asked
-        :return:
+        Returns a JSON representation of the processed data.
+
+        :return: JSON string representation of the processed sentences and names.
         """
         return self._to_json()
 
     def _to_json(self):
         """
-        Converts the processed data and names into a JSON format as described.
-        :return: JSON string representation of the processed data.
+        Converts the processed sentences and names into a structured JSON format.
+
+        :return: JSON string containing processed sentences and names.
         """
+        # Prepare processed sentences
         processed_sentences = self.sentences_list
+
+        # Pair each name with its corresponding list of other names
         processed_names = [
             [self.names_list[i], self.other_names_list[i]]
             for i in range(len(self.names_list))
         ]
 
-        # Format the output
+        # Construct the output dictionary in the required format
         output = {
             f"Question {self.prog_num}": {
                 "Processed Sentences": processed_sentences,
@@ -117,7 +171,9 @@ class TextPreprocessor:
             }
         }
 
+        # Return the JSON string representation of the output
         return json.dumps(output, indent=4)
+
 
 if __name__ == '__main__':
 
