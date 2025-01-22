@@ -242,7 +242,7 @@ if __name__ == '__main__':
 
 
     # Test logic
-    base_dir = "text_analyzer"
+    base_dir = "../text_analyzer"
 
     # Iterate through 1, 2, and 3 for file sets
     for i in range(1, 4):
