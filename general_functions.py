@@ -3,6 +3,7 @@ import re
 import pandas as pd
 
 
+HEADER_SENTENCES_PREP_TEMPLATE = ""
 def clean_text(text=""):
     """
     Function which does all the string cleaning on the data
@@ -35,3 +36,20 @@ def remove_words(list_of_text, words_to_remove):
             if not (isinstance(item, str) and item in words_to_remove)  # Exclude unwanted words
         ]
     return list_of_text
+
+
+def create_all_sublists(input_list, k):
+    """
+    Function which creates all sublists of size k from a given list.
+
+    :param input_list: The input list from which to generate sublists.
+    :param k: The desired size of each sublist.
+    :return: A list of sublists, each of size k.
+    """
+    # Check if k is greater than the input list size
+    if k > len(input_list) or k <= 0:
+        return []  # Return an empty list if k is invalid
+
+    # Generate sublists
+    sublists = [input_list[i:i + k] for i in range(len(input_list) - k + 1)]
+    return sublists
