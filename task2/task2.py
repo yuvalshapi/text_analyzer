@@ -75,8 +75,6 @@ class SequenceCounter:
         # Convert the result to a JSON string
         return json.dumps(result, indent=4)
 
-        # Convert the result to a JSON string
-        return json.dumps(result, indent=4)
 
 
 if __name__ == '__main__':
@@ -145,7 +143,7 @@ if __name__ == '__main__':
 
 
     # Test logic
-    base_dir = "text_analyzer"
+    base_dir = "../text_analyzer"
     n1 = [3,4,5]
     # Iterate through 1, 2, and 3 for file sets
     for i in range(1, 4):
