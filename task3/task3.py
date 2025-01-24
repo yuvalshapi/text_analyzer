@@ -64,8 +64,8 @@ class NamesCounter:
             for name in self.names_dict.keys():
                 num_of_apps = 0  # Initialize the count for this name in the current sentence
 
-                # Generate all substrings of the full name
-                name_variations = gf.generate_substrings(name)
+                # Split the full name into individual words and add to name variations
+                name_variations = name.split()  # Add parts of the name (e.g., ["Harry", "James", "Potter"])
 
                 # Include associated nicknames in the variations
                 name_variations.extend(self.names_dict[name])
