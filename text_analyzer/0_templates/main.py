@@ -53,6 +53,7 @@ def readargs(args=None):
     parser.add_argument('--qsek_query_path',
                         help="json file with query path",
                         )
+    return parser.parse_args(args)
 
 def main():
     args=readargs()

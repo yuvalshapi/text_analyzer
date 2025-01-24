@@ -1,9 +1,7 @@
-import string
-import re
 import os
 import json
 import pandas as pd
-import general_functions as gf
+from general_files import general_functions as gf
 
 
 class TextPreprocessor:
@@ -79,6 +77,38 @@ class TextPreprocessor:
         :return: List of cleaned and processed names.
         """
         return self.names_list
+
+    def get_dict_of_names(self):
+        """
+        Constructs a dictionary where each key is a name, and its value is a list of nicknames.
+
+        :return: A dictionary of names and their associated nicknames.
+        """
+        names_dict = {}
+        if self.people_names_data is not None:
+            for _, row in self.people_names_data.iterrows():
+                # Extract the 'Name' and 'Other Names' fields
+                name = row[self.people_names_data.columns[0]]
+                other_names = row[self.people_names_data.columns[1]]
+
+                # Ensure name is processed as a single string
+                name_str = " ".join(name) if isinstance(name, list) else str(name).strip()
+
+                # Process other names based on their type
+                if isinstance(other_names, list):
+                    nicknames = [" ".join(nickname) for nickname in other_names if nickname]
+                elif isinstance(other_names, str):
+                    nicknames = [
+                        " ".join(nickname.strip().split())
+                        for nickname in other_names.split(",") if nickname.strip()
+                    ]
+                else:
+                    nicknames = []
+
+                # Add the name and its nicknames to the dictionary
+                names_dict[name_str] = nicknames
+
+        return names_dict
 
     def _process_data_inputs(self):
         """
@@ -264,15 +294,4 @@ if __name__ == '__main__':
         # Instantiate the TextPreprocessor class and get the result
         T = TextPreprocessor(s_path, p_path, w_path, 1)
         processed_result = json.loads(T._to_json())
-
-        # Save processed result to a file
-        with open(output_path, 'w') as outfile:
-            json.dump(processed_result, outfile, indent=4)
-        print(f"Processed result saved to {output_path}")
-
-        # Compare and print results with sources
-        if processed_result == expected_result:
-            print(f"File set {i}: PASS")
-        else:
-            print(f"File set {i}: FAIL")
-            print_differences_and_find_sources(processed_result, expected_result, sentences_file=s_path)
+        print(T.get_dict_of_names())

@@ -7,14 +7,14 @@ class SequenceCounter:
     def __init__(self,
                  sentences_file_path:str,
                  remove_words_file_path: str = None,
-                 is_processes:bool = False,
+                 is_processed:bool = False,
                  k:int = 1):
         """ docstring"""
 
         self.seq_num = k
 
         #If processed we only load the file
-        if is_processes:
+        if is_processed:
             sentences_data = pd.read_json(sentences_file_path)
             self.sentences_list = sentences_data.loc["Processed Sentences", "Question 1"]
 
