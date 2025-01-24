@@ -1,8 +1,9 @@
-import json
-import os
 import pandas as pd
+import json
+import re
+import os
 import general_files.general_test_functions as gtf
-from task3.task3 import NamesCounter
+from task4.task4 import *
 
 if __name__ == '__main__':
 
@@ -13,20 +14,20 @@ if __name__ == '__main__':
         print(f"\n=== Running Test for File Set {i} ===")
 
         # File paths for the current iteration
-        p_path = os.path.join(base_dir, f"test{i}", f"people_small_{i}.csv")
+        kseq_path = os.path.join(base_dir, f"test{i}", f"kseq_query_keys_{i}.json")
         s_path = os.path.join(base_dir, f"test{i}", f"sentences_small_{i}.csv")
         w_path = os.path.join(base_dir, f"test{i}", "REMOVEWORDS.csv")
-        e_path = os.path.join(base_dir , f"test{i}", f"Q3_result{i}.json")
+        e_path = os.path.join(base_dir, f"test{i}", f"Q4_result{i}.json")
 
         # Output JSON file for processed result
-        output_path = os.path.join(base_dir,f"test{i}",f"processed_result{i}.json")
+        output_path = os.path.join(base_dir, f"test{i}", f"processed_result{i}.json")
 
         # Load the expected JSON result for the current iteration
         with open(e_path, 'r') as file:
             expected_result = json.load(file)
 
         # Instantiate the TextPreprocessor class and get the result
-        T = NamesCounter(s_path, p_path, w_path, False)
+        T = KseqEngine(s_path, w_path, kseq_path, False)
         processed_result = json.loads(T.get_json_format())
 
         # Save processed result to a file

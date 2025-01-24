@@ -127,3 +127,15 @@ class NamesCounter:
 
         # Convert the dictionary to a formatted JSON string
         return json.dumps(output, indent=4)
+
+
+    def get_json_format(self):
+        """
+        Public method to get the formatted JSON structure.
+
+        Returns:
+        -------
+        str
+            The JSON string output of the `_to_json` method.
+        """
+        return self._to_json()

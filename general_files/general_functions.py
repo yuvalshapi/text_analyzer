@@ -126,8 +126,27 @@ def generate_substrings(input_string: str) -> list:
 
     return substrings
 
-if __name__ == '__main__':
-    print(parse_json_to_lists("Q1_result1.json"))
-    print(count_and_remove(" my baby has a baby in her ba by", "baby"))
 
+def load_kseqs_from_json(file_path):
+    """
+    Load K-seqs from a JSON file and return them as a list of concatenated strings using pandas.
+
+    :param file_path: Path to the JSON file.
+    :return: List of strings where each string is a row of concatenated K-seq.
+    """
+    # Load the JSON file into a DataFrame
+    df = pd.read_json(file_path)
+    # Dynamically select the first column
+    first_column = df.iloc[:, 0]
+
+    # Process the "keys" column: join each list of words into a single string
+    kseqs = first_column.apply(lambda row: " ".join(word.strip().lower() for word in row))
+
+    # Return the list of strings
+    return kseqs.tolist()
+
+if __name__ == '__main__':
+    #print(parse_json_to_lists("Q1_result1.json"))
+    #print(count_and_remove(" my baby has a baby in her ba by", "baby"))
+    print(load_kseqs_from_json("../task4/test_files/test1/kseq_query_keys_1.json"))
 
