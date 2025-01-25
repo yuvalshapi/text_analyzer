@@ -1,3 +1,4 @@
+import copy
 import pandas as pd
 import json
 from general_files import general_functions as gf
@@ -74,7 +75,7 @@ class NamesCounter:
                 name_variations.extend(self.names_dict[name])
 
                 # Use a temporary copy of the sentence for counting occurrences
-                temp_sentence_str = sentence_str
+                temp_sentence_str = copy.deepcopy(sentence_str)
 
                 # Count occurrences for each variation of the name
                 for variation in name_variations:

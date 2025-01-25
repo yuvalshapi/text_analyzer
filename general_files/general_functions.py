@@ -75,7 +75,6 @@ def parse_json_to_lists(path:""):
     #Extracting the names
     names_list = data["Question 1"]["Processed Names"]
     names_dict = {' '.join(entry[0]): [[' '.join(nickname)] for nickname in entry[1]] for entry in names_list}
-    print(type (names_dict["ballyfumble stranger"]))
     return sentences, names_dict
 
 
