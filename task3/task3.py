@@ -40,49 +40,62 @@ class NamesCounter:
 
         # Initialize an empty dictionary to store appearance counts
         self.app_dict = {}
-
+        self.names_sentences = {}
         # Call the private method to compute the appearances
         self._appearances_counter()
 
     def _appearances_counter(self):
         """
-        Counts the appearances of each name (full name or other names) in the text and updates `app_dict`.
+        Counts the appearances of each name (full name or other names) in the text,
+        updates `app_dict` with occurrence counts, and records the sentences in which each name appears.
 
-        The function iterates over the list of processed sentences and counts the occurrences of each full name
-        and their associated nicknames. The occurrences are tracked and stored in `app_dict`.
-
-        :return: None
+        This method performs the following tasks:
+        1. Iterates over the list of processed sentences to identify mentions of each person.
+        2. For each full name (and its nicknames), counts its appearances in each sentence.
+        3. Maintains a dictionary (`app_dict`) with the total count of appearances for each name.
+        4. Maintains another dictionary (`person_sentences`) to store sentences where each name appears.
+        :return None
         """
-        app_dict = {}  # Temporary dictionary to store counts during computation
+        # Temporary dictionaries to store counts and sentences
+        app_dict = {}
+        person_sentences = {name: [] for name in self.names_dict.keys()}  # Initialize for each name
 
         # Iterate through each sentence in the processed sentences list
         for sentence in self.sentences_list:
             # Convert the sentence (list of words) into a single string
             sentence_str = " ".join(sentence)
 
-            # Iterate through each full name in the names dictionary
+            # Check for mentions of each person in the sentence
             for name in self.names_dict.keys():
-                num_of_apps = 0  # Initialize the count for this name in the current sentence
+                num_of_apps = 0  # Counter for this name in the current sentence
 
-                # Split the full name into individual words and add to name variations
-                name_variations = name.split()  # Add parts of the name (e.g., ["Harry", "James", "Potter"])
-
-                # Include associated nicknames in the variations
+                # Create variations of the name (split full name + include nicknames)
+                name_variations = name.split()
                 name_variations.extend(self.names_dict[name])
 
-                # Count and remove occurrences of each name variation
+                # Use a temporary copy of the sentence for counting occurrences
+                temp_sentence_str = sentence_str
+
+                # Count occurrences for each variation of the name
                 for variation in name_variations:
-                    count_app, sentence_str = gf.count_and_remove(sentence_str, variation)
+                    count_app, _ = gf.count_and_remove(temp_sentence_str, variation)
                     num_of_apps += count_app  # Increment the count with the occurrences of the variation
 
-                # Update the overall appearance count in app_dict
-                app_dict[name] = app_dict.get(name, 0) + num_of_apps
+                # If the name appeared in this sentence, update counts and store the sentence
+                if num_of_apps > 0:
+                    # Update total count in app_dict
+                    app_dict[name] = app_dict.get(name, 0) + num_of_apps
 
-        # Remove entries with zero appearances
+                    # Add the sentence to the person's context if not already added
+                    if sentence_str not in person_sentences[name]:
+                        person_sentences[name].append(sentence_str)
+
+        # Remove names with zero appearances from the app_dict
         app_dict = {name: count for name, count in app_dict.items() if count > 0}
 
-        # Store the result in the instance variable for further use
+        # Update instance variables with the results
         self.app_dict = {name: app_dict[name] for name in sorted(app_dict.keys())}
+        self.names_sentences = {name: person_sentences[name] for name in person_sentences.keys()}
 
     def __str__(self):
         """
@@ -128,6 +141,13 @@ class NamesCounter:
         # Convert the dictionary to a formatted JSON string
         return json.dumps(output, indent=4)
 
+    def get_names_sentences(self):
+        """
+        Public method to get the person sentences.
+        :return:
+        dict - containing names as keys and sentences as values.
+        """
+        return self.names_sentences
 
     def get_json_format(self):
         """
@@ -139,3 +159,14 @@ class NamesCounter:
             The JSON string output of the `_to_json` method.
         """
         return self._to_json()
+
+    def get_sentences(self):
+        """
+        Public method to get the cleaned sentences
+
+        Returns:
+        -------
+        list of lists
+            list of sentces contains list of words
+        """
+        return self.sentences_list
