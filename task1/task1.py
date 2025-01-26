@@ -80,33 +80,17 @@ class TextPreprocessor:
 
     def get_dict_of_names(self):
         """
-        Constructs a dictionary where each key is a name, and its value is a list of nicknames.
+        Constructs a dictionary where each key is a cleaned name, and its value is a list of cleaned nicknames.
+        Uses the already processed names and other names to ensure consistency.
 
-        :return: A dictionary of names and their associated nicknames.
+        :return: A dictionary of cleaned names and their associated cleaned nicknames.
         """
-        names_dict = {}
-        if self.people_names_data is not None:
-            for _, row in self.people_names_data.iterrows():
-                # Extract the 'Name' and 'Other Names' fields
-                name = row[self.people_names_data.columns[0]]
-                other_names = row[self.people_names_data.columns[1]]
 
-                # Ensure name is processed as a single string
-                name_str = " ".join(name) if isinstance(name, list) else str(name).strip()
-
-                # Process other names based on their type
-                if isinstance(other_names, list):
-                    nicknames = [" ".join(nickname) for nickname in other_names if nickname]
-                elif isinstance(other_names, str):
-                    nicknames = [
-                        " ".join(nickname.strip().split())
-                        for nickname in other_names.split(",") if nickname.strip()
-                    ]
-                else:
-                    nicknames = []
-
-                # Add the name and its nicknames to the dictionary
-                names_dict[name_str] = nicknames
+        # Construct the dictionary from the processed names and nicknames
+        names_dict = {
+            " ".join(name): [" ".join(nickname) for nickname in nicknames]
+            for name, nicknames in zip(self.names_list, self.other_names_list)
+        }
 
         return names_dict
 
@@ -143,7 +127,7 @@ class TextPreprocessor:
         Processes names and other names by performing the following steps:
         1. Cleans and removes duplicates while preserving the original structure of the DataFrame.
         2. Splits the 'Name' and 'Other Names' columns into lists of words.
-        3. Separates 'names' and 'other names' into distinct lists.
+        3. Synchronizes names and their other names, removing entries where the full name becomes whitespace.
         4. Removes unwanted words from the names and other names.
         """
         # Clean and split the 'Name' column into lists of words
@@ -160,9 +144,21 @@ class TextPreprocessor:
             .apply(lambda x: [gf.clean_text(name.strip()).split() for name in x.split(",") if name.strip()])
         )
 
-        # Extract processed 'Name' and 'Other Names' columns into separate lists
-        self.names_list = self.people_names_data[self.people_names_data.columns[0]].tolist()
-        self.other_names_list = self.people_names_data[self.people_names_data.columns[1]].tolist()
+        # Synchronize names and other names
+        clean_data = []
+        for _, row in self.people_names_data.iterrows():
+            name = row[self.people_names_data.columns[0]]
+            other_names = row[self.people_names_data.columns[1]]
+
+            # Check if the cleaned full name is empty
+            if not name:
+                continue  # Skip if the full name is empty after cleaning
+
+            clean_data.append((name, other_names))  # Keep valid entries
+
+        # Update names_list and other_names_list based on valid entries
+        self.names_list = [entry[0] for entry in clean_data]
+        self.other_names_list = [entry[1] for entry in clean_data]
 
         # Remove common words from the 'names' list
         self.names_list = gf.remove_words(self.names_list, self.words_to_remove)

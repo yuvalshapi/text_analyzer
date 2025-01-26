@@ -56,25 +56,30 @@ def create_all_sublists(input_list, k):
     return sublists
 
 
-def parse_json_to_lists(path:""):
-    """
-    function which gets a json file in the text editor format and split it into list and a dict.
-    1. list of  sentences
-    2. dict of first names as keys and list of  other names as values.
-    :param path:
-    :return:
-    sentences list of lists which represent the data ,
-    names_dict dict of the names as keys and lists of other names as values.
-    """
-
-    #loading the formatted json file
+def parse_json_to_lists(path: str, remove_words_path: str = None):
+    # Load the formatted JSON file
     data = pd.read_json(path)
-    #Extracting the sentences
+
+    # Extracting the sentences
     sentences = data["Question 1"]["Processed Sentences"]
 
-    #Extracting the names
+    # Extracting the names
     names_list = data["Question 1"]["Processed Names"]
-    names_dict = {' '.join(entry[0]): [[' '.join(nickname)] for nickname in entry[1]] for entry in names_list}
+    names_dict = {
+        ' '.join(entry[0]): [' '.join(nickname) for nickname in entry[1]]
+        for entry in names_list
+    }
+
+    # Apply word removal if a remove_words_path is provided
+    if remove_words_path:
+        remove_words_df = pd.read_csv(remove_words_path)
+        words_to_remove = remove_words_df.iloc[:, 0].dropna().str.strip().str.lower().tolist()
+        names_dict = {
+            remove_words([name], words_to_remove)[0]:
+                remove_words(nicknames, words_to_remove)
+            for name, nicknames in names_dict.items()
+        }
+
     return sentences, names_dict
 
 
@@ -144,8 +149,32 @@ def load_kseqs_from_json(file_path):
     # Return the list of strings
     return kseqs.tolist()
 
+def is_appear(list,word_list):
+    """
+    Function which gets a  list of  list of strings stings and decide if a string appears in the list.
+    :param list:
+    :param string:
+    :return:
+    """
+    for sentence in list:  # Iterate through each sentence in the window
+        for word in word_list:  # Check each variation
+            if any(part in sentence for part in word):  # Check if any word in the variation is in the sentence
+                return True
+    return False
 if __name__ == '__main__':
     #print(parse_json_to_lists("Q1_result1.json"))
     #print(count_and_remove(" my baby has a baby in her ba by", "baby"))
-    print(load_kseqs_from_json("../task4/test_files/test1/kseq_query_keys_1.json"))
+    #print(load_kseqs_from_json("../task4/test_files/test1/kseq_query_keys_1.json"))
+    list_of_strings = [
+        ["apple", "banana", "cherry"],
+        ["dog", "cat", "mouse"],
+        ["sun", "moon", "stars"],
+        ["python", "java", "c++"],
+        ["car", "bike", "bus"],
+        ["red", "blue", "green"],
+        ["table", "chair", "sofa"],
+        ["flower", "tree", "grass"],
+        ["pen", "pencil", "eraser"]
+    ]
 
+    print(create_all_sublists(list_of_strings,3))

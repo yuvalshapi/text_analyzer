@@ -5,6 +5,12 @@ from task1.task1 import TextPreprocessor
 from task2.task2 import SequenceCounter
 import general_files.general_test_functions as gtf
 
+# ANSI escape codes for colored output
+class Colors:
+    GREEN = '\033[92m'
+    RED = '\033[91m'
+    RESET = '\033[0m'
+
 if __name__ == '__main__':
 
     # Test logic
@@ -39,9 +45,9 @@ if __name__ == '__main__':
 
         # Compare and print results with sources
         if processed_result == expected_result:
-            print(f"Test {i} (not processed): SUCCESS")
+            print(f"{Colors.GREEN}Test {i} (not processed): SUCCESS{Colors.RESET}")
         else:
-            print(f"Test {i} (not processed): FAIL")
+            print(f"{Colors.RED}Test {i} (not processed): FAIL{Colors.RESET}")
             gtf.print_differences_and_find_sources(processed_result, expected_result, sentences_file=s_path)
 
         # Generate preprocessed input for SequenceCounter
@@ -49,7 +55,7 @@ if __name__ == '__main__':
         fd_path = os.path.join(base_dir, f"test{i}", f"processed_data.json")
 
         print(f"Generating preprocessed input for File Set {i}...")
-        text_preprocessor = TextPreprocessor(s_path,p_path, w_path,1)
+        text_preprocessor = TextPreprocessor(s_path, p_path, w_path, 1)
         preprocessed_json = json.loads(text_preprocessor.get_json_format())
 
         # Save the preprocessed JSON to a file
@@ -69,7 +75,7 @@ if __name__ == '__main__':
 
         # Compare the outputs
         if processed_result_preprocessed == expected_result:
-            print(f"Test {i} (processed): SUCCESS")
+            print(f"{Colors.GREEN}Test {i} (processed): SUCCESS{Colors.RESET}")
         else:
-            print(f"Test {i} (processed): FAIL")
+            print(f"{Colors.RED}Test {i} (processed): FAIL{Colors.RESET}")
             gtf.print_differences_and_find_sources(processed_result_preprocessed, expected_result, sentences_file=s_path)
