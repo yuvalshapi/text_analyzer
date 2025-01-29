@@ -1,0 +1,70 @@
+# Task 1
+python main.py -t 1 -s ./task1/test_files/test1/sentences_small_1.csv -n ./task1/test_files/test1/people_small_1.csv -r ./task1/test_files/test1/REMOVEWORDS.csv
+python main.py -t 1 -s ./task1/test_files/test2/sentences_small_2.csv -n ./task1/test_files/test2/people_small_2.csv -r ./task1/test_files/test2/REMOVEWORDS.csv
+python main.py -t 1 -s ./task1/test_files/test3/sentences_small_3.csv -n ./task1/test_files/test3/people_small_3.csv -r ./task1/test_files/test3/REMOVEWORDS.csv
+
+# Task 2
+python main.py -t 2 -s ./task2/test_files/test1/sentences_small_1.csv -r ./task2/test_files/test1/REMOVEWORDS.csv --maxk 3
+python main.py -t 2 -s ./task2/test_files/test2/sentences_small_2.csv -r ./task2/test_files/test2/REMOVEWORDS.csv --maxk 4
+python main.py -t 2 -s ./task2/test_files/test3/sentences_small_3.csv -r ./task2/test_files/test3/REMOVEWORDS.csv --maxk 5
+
+# Task 3
+python main.py -t 3 -s ./task3/test_files/test1/sentences_small_1.csv -n ./task3/test_files/test1/people_small_1.csv -r ./task3/test_files/test1/REMOVEWORDS.csv
+python main.py -t 3 -s ./task3/test_files/test2/sentences_small_2.csv -n ./task3/test_files/test2/people_small_2.csv -r ./task3/test_files/test2/REMOVEWORDS.csv
+python main.py -t 3 -s ./task3/test_files/test3/sentences_small_3.csv -n ./task3/test_files/test3/people_small_3.csv -r ./task3/test_files/test3/REMOVEWORDS.csv
+python main.py -t 3 -s ./task3/test_files/test4/sentences_small_4.csv -n ./task3/test_files/test4/people_small_4.csv -r ./task3/test_files/test4/REMOVEWORDS.csv
+
+# Task 4
+python main.py -t 4 -s ./task4/test_files/test1/sentences_small_1.csv -r ./task4/test_files/test1/REMOVEWORDS.csv --qsek_query_path ./task4/test_files/test1/kseq_query_keys_1.json
+python main.py -t 4 -s ./task4/test_files/test2/sentences_small_2.csv -r ./task4/test_files/test2/REMOVEWORDS.csv --qsek_query_path ./task4/test_files/test2/kseq_query_keys_2.json
+python main.py -t 4 -s ./task4/test_files/test3/sentences_small_3.csv -r ./task4/test_files/test3/REMOVEWORDS.csv --qsek_query_path ./task4/test_files/test3/kseq_query_keys_3.json
+python main.py -t 4 -s ./task4/test_files/test4/sentences_small_4.csv -r ./task4/test_files/test4/REMOVEWORDS.csv --qsek_query_path ./task4/test_files/test4/kseq_query_keys_4.json
+
+# Task 5
+python main.py -t 5 -s ./task5/test_files/test1/sentences_small_1.csv -n ./task5/test_files/test1/people_small_1.csv -r ./task5/test_files/test1/REMOVEWORDS.csv --maxk 5
+python main.py -t 5 -s ./task5/test_files/test2/sentences_small_2.csv -n ./task5/test_files/test2/people_small_2.csv -r ./task5/test_files/test2/REMOVEWORDS.csv --maxk 6
+python main.py -t 5 -s ./task5/test_files/test3/sentences_small_3.csv -n ./task5/test_files/test3/people_small_3.csv -r ./task5/test_files/test3/REMOVEWORDS.csv --maxk 7
+
+# Task 6
+python main.py -t 6 -s ./task6/test_files/test1/sentences_small_1.csv -n ./task6/test_files/test1/people_small_1.csv -r ./task6/test_files/test1/REMOVEWORDS.csv --windowsize 5 --threshold 2
+python main.py -t 6 -s ./task6/test_files/test2/sentences_small_2.csv -n ./task6/test_files/test2/people_small_2.csv -r ./task6/test_files/test2/REMOVEWORDS.csv --windowsize 3 --threshold 2
+python main.py -t 6 -s ./task6/test_files/test3/sentences_small_3.csv -n ./task6/test_files/test3/people_small_3.csv -r ./task6/test_files/test3/REMOVEWORDS.csv --windowsize 5 --threshold 1
+
+# Task 7
+python main.py -t 7 -s ./task7/test_files/test1/sentences_small_1.csv -n ./task7/test_files/test1/people_small_1.csv -r ./task7/test_files/test1/REMOVEWORDS.csv --windowsize 5 --threshold 2 --pairs ./task7/test_files/test1/people_connections_1.json
+python main.py -t 7 -s ./task7/test_files/test2/sentences_small_2.csv -n ./task7/test_files/test2/people_small_2.csv -r ./task7/test_files/test2/REMOVEWORDS.csv --windowsize 3 --threshold 2 --pairs ./task7/test_files/test2/people_connections_2.json
+python main.py -t 7 -s ./task7/test_files/test3/sentences_small_3.csv -n ./task7/test_files/test3/people_small_3.csv -r ./task7/test_files/test3/REMOVEWORDS.csv --windowsize 5 --threshold 1 --pairs ./task7/test_files/test3/people_connections_3.json
+
+# Let's create an updated file with preprocessed commands for all tasks except Task 1.
+# This includes tasks 2 through 7 with both raw and preprocessed input paths.
+
+bash_commands_with_preprocessed = """
+# Task 1 (No preprocessed input for this task)
+python main.py -t 1 -s ./task1/test_files/test1/sentences_small_1.csv -n ./task1/test_files/test1/people_small_1.csv -r ./task1/test_files/test1/REMOVEWORDS.csv
+
+# Task 2
+python main.py -t 2 -s ./task2/test_files/test1/sentences_small_1.csv -r ./task2/test_files/test1/REMOVEWORDS.csv --maxk 3
+python main.py -t 2 -p ./task2/test_files/test1/input_data.json --maxk 3
+
+# Task 3
+python main.py -t 3 -s ./task3/test_files/test1/sentences_small_1.csv -n ./task3/test_files/test1/people_small_1.csv -r ./task3/test_files/test1/REMOVEWORDS.csv
+python main.py -t 3 -p ./task3/test_files/test1/input_data.json
+
+# Task 4
+python main.py -t 4 -s ./task4/test_files/test1/sentences_small_1.csv -r ./task4/test_files/test1/REMOVEWORDS.csv --qsek_query_path ./task4/test_files/test1/kseq_query_keys_1.json
+python main.py -t 4 -p ./task4/test_files/test1/processed_input1.json --qsek_query_path ./task4/test_files/test1/kseq_query_keys_1.json
+
+# Task 5
+python main.py -t 5 -s ./task5/test_files/test1/sentences_small_1.csv -n ./task5/test_files/test1/people_small_1.csv -r ./task5/test_files/test1/REMOVEWORDS.csv --maxk 4
+python main.py -t 5 -p ./task5/test_files/test1/processed_input1.json --maxk 4
+
+# Task 6
+python main.py -t 6 -s ./task6/test_files/test1/sentences_small_1.csv -n ./task6/test_files/test1/people_small_1.csv -r ./task6/test_files/test1/REMOVEWORDS.csv --windowsize 5 --threshold 2
+python main.py -t 6 -p ./task6/test_files/test1/processed_input1.json --windowsize 5 --threshold 2
+
+# Task 7
+python main.py -t 7 -s ./task7/test_files/test1/sentences_small_1.csv -n ./task7/test_files/test1/people_small_1.csv -r ./task7/test_files/test1/REMOVEWORDS.csv --windowsize 5 --threshold 2 --pairs ./task7/test_files/test1/people_connections_1.json
+python main.py -t 7 -p ./task7/test_files/test1/processed_input1.json --windowsize 5 --threshold 2 --pairs ./task7/test_files/test1/people_connections_1.json
+
+
+

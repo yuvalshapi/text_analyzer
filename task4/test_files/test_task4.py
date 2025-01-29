@@ -3,7 +3,7 @@ import json
 import os
 import general_files.general_test_functions as gtf
 from task4.task4 import KseqEngine
-from task1.task1 import TextPreprocessor
+from task1.textprocessor import TextPreprocessor
 
 # ANSI escape codes for colored output
 class Colors:

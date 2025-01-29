@@ -1,7 +1,7 @@
 import pandas as pd
 import json
 import re
-import task1.task1 as task1
+import task1.textprocessor as task1
 import task3.task3 as task3
 import general_files.general_functions as gf
 

@@ -2,7 +2,7 @@ import os
 import json
 import pandas as pd
 import general_files.general_test_functions as gtf
-from task1.task1 import TextPreprocessor
+from task1.textprocessor import TextPreprocessor
 
 # ANSI escape codes for colored output
 class Colors:

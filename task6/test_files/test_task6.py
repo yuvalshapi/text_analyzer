@@ -1,7 +1,7 @@
 import json
 import os
 import general_files.general_test_functions as gtf
-from task1.task1 import TextPreprocessor
+from task1.textprocessor import TextPreprocessor
 from task5.task5 import ContextFinder
 import task6.task6 as task6
 

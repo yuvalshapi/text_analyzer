@@ -1,7 +1,7 @@
 import os
 import json
 import pandas as pd
-from task1.task1 import TextPreprocessor
+from task1.textprocessor import TextPreprocessor
 from task2.task2 import SequenceCounter
 import general_files.general_test_functions as gtf
 

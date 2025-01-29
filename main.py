@@ -3,7 +3,7 @@
 import argparse
 import string
 import os
-import task1.task1 as task1
+import task1.textprocessor as task1
 import task2.task2 as task2
 import task3.task3 as task3
 import task4.task4 as task4
@@ -64,88 +64,68 @@ def readargs(args=None):
                         )
     return parser.parse_args(args)
 
-def main():
-    args=readargs()
+def process_task(task_num, args):
+    """
+    Handles the execution of different tasks based on task_num.
 
-    task_num = int(args.task)
-    if args.preprocessed:
-        is_preprocessed = True
-    else:
-        is_preprocessed = False
+    Args:
+        task_num (int): The selected task number.
+        args (Namespace): Parsed command-line arguments.
+
+    Returns:
+        str: JSON output of the processed task.
+    """
+    is_preprocessed = bool(args.preprocessed)
+    s_path = args.preprocessed[0] if is_preprocessed else args.sentences
+    name_path = args.names
+    words_path = args.removewords
 
     if task_num == 1:
-        s_path = args.sentences
-        name_path = args.names
-        words_path = args.removewords
-        processed_data = task1.TextPreprocessor(s_path, name_path, words_path,task_num)
-        print(processed_data.get_json_format())
-    if task_num == 2:
-        k_num = args.maxk
-        if is_preprocessed:
-            s_path = args.preprocessed
-        else:
-            s_path = args.sentences
-            words_path = args.removewords
-        processed_data = task2.SequenceCounter(s_path,words_path,is_preprocessed,k_num)
-        print(processed_data.get_json_format())
+        processed_data = task1.TextPreprocessor(s_path, name_path, words_path, task_num)
 
-    if task_num == 3:
-        if is_preprocessed:
-            s_path = args.preprocessed
-        else:
-            s_path = args.sentences
-            words_path = args.removewords
-            name_path = args.names
-        processed_data = task3.NamesCounter(s_path,name_path,words_path,is_preprocessed)
-        print(processed_data.get_json_format())
+    elif task_num == 2:
+        processed_data = task2.SequenceCounter(s_path, words_path, is_preprocessed, args.maxk)
 
-    if task_num == 4:
-        if is_preprocessed:
-            s_path = args.preprocessed
-        else:
-            s_path = args.sentences
-            words_path = args.removewords
-            kseq_file = args.qsek_query_path
-        processed_data = task4.KseqEngine(s_path,words_path,kseq_file,is_preprocessed)
-        print(processed_data.get_json_format())
+    elif task_num == 3:
+        processed_data = task3.NamesCounter(s_path, name_path, words_path, is_preprocessed)
 
-    if task_num == 5:
-        size_of_kseq = args.maxk
-        if is_preprocessed:
-            s_path = args.preprocessed
-        else:
-            s_path = args.sentences
-            name_path = args.names
-            words_path = args.removewords
-        processed_data = task5.ContextFinder(s_path,name_path,words_path,is_preprocessed,size_of_kseq)
-        print(processed_data.get_json_format())
+    elif task_num == 4:
+        processed_data = task4.KseqEngine(s_path, words_path, args.qsek_query_path, is_preprocessed)
 
-    if task_num == 6:
-        window_size = args.windowsize
-        threshold = args.threshold
-        if is_preprocessed:
-            s_path = args.preprocessed
-        else:
-            s_path = args.sentences
-            name_path = args.names
-            words_path = args.removewords
-        processed_data = task6.ConnectionFinder(s_path,name_path,words_path,is_preprocessed,window_size,threshold)
-        print(processed_data.get_json_format())
+    elif task_num == 5:
+        processed_data = task5.ContextFinder(s_path, name_path, words_path, is_preprocessed, args.maxk)
 
-    if task_num == 7:
-        window_size = args.windowsize
-        threshold = args.threshold
-        pc_path = args.pairs
-        if is_preprocessed:
-            s_path = args.preprocessed
-        else:
-            s_path = args.sentences
-            name_path = args.names
-            words_path = args.removewords
-        processed_data = task7.IndirectConnector(s_path,name_path,words_path,pc_path,is_preprocessed,window_size,threshold)
-        print(processed_data.get_json_format())
+    elif task_num == 6:
+        processed_data = task6.ConnectionFinder(s_path, name_path, words_path, is_preprocessed, args.windowsize,
+                                                args.threshold)
 
-if __name__=="__main__":
+    elif task_num == 7:
+        processed_data = task7.IndirectConnector(s_path, name_path, words_path, args.pairs, is_preprocessed,
+                                                 args.windowsize, args.threshold)
+
+    elif task_num == 8:
+        processed_data = task7.IndirectConnector(s_path, name_path, words_path, args.pairs, is_preprocessed,args.fixed_length)
+    else:
+        raise ValueError("Invalid task number.")
+
+    return processed_data.get_json_format()
+
+
+def main():
+    """
+    Main function to parse arguments and execute the appropriate task.
+    """
+    args = readargs()
+    task_num = int(args.task)
+
+    try:
+        result = process_task(task_num, args)
+        print(result)
+    except Exception as e:
+        print(f"Error processing task {task_num}: {e}")
+
+
+if __name__ == "__main__":
     main()
 
 

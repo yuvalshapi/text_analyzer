@@ -3,7 +3,7 @@ import json
 import os
 import string
 import task3.task3 as task3
-import task1.task1 as task1
+import task1.textprocessor as task1
 import task2.task2 as task2
 import general_files.general_functions as gf
 
@@ -68,7 +68,7 @@ class ConnectionFinder:
 
         # Sort the dictionary alphabetically by names
         self.people_windows_dict = dict(sorted(self.people_windows_dict.items()))
-        print(self.people_windows_dict)
+
     def calculate_shared_windows(self):
         """
         Calculates the number of shared windows between each pair of people.

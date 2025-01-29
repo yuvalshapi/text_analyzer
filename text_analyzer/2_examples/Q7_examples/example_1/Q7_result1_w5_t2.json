@@ -1,19 +1,21 @@
 {
-    "Question 7": [
-        [
-            "harry potter",
-            "aurelius dumbledore",
-            true
-        ],
-        [
-            "hermione granger",
-            "draco malfoy",
-            false
-        ],
-        [
-            "hermione granger",
-            "harry potter",
-            false
+    "Question 7": {
+        "Pair Matches": [
+            [
+                "aurelius dumbledore",
+                "harry potter",
+                true
+            ],
+            [
+                "draco malfoy",
+                "hermione granger",
+                false
+            ],
+            [
+                "harry potter",
+                "hermione granger",
+                false
+            ]
         ]
-    ]
+    }
 }

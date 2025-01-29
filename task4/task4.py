@@ -1,7 +1,7 @@
 import pandas as pd
 import json
 from general_files import general_functions as gf
-from task1.task1 import TextPreprocessor
+from task1.textprocessor import TextPreprocessor
 import os
 
 

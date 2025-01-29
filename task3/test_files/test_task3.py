@@ -2,7 +2,7 @@ import json
 import os
 import pandas as pd
 import general_files.general_test_functions as gtf
-from task1.task1 import TextPreprocessor
+from task1.textprocessor import TextPreprocessor
 from task3.task3 import NamesCounter
 
 # ANSI escape codes for colored output
