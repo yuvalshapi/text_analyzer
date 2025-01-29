@@ -18,6 +18,7 @@ class ContextFinder:
         self.names_sentences = data.get_names_sentences()
         self.names_kseqs = {}
         self.sentences = data.get_sentences()
+
         self.prepare_kseqs()
     def prepare_kseqs(self):
         """
