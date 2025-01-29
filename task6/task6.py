@@ -68,7 +68,7 @@ class ConnectionFinder:
 
         # Sort the dictionary alphabetically by names
         self.people_windows_dict = dict(sorted(self.people_windows_dict.items()))
-
+        print(self.people_windows_dict)
     def calculate_shared_windows(self):
         """
         Calculates the number of shared windows between each pair of people.
@@ -102,7 +102,7 @@ class ConnectionFinder:
         """
         full_connections_dict = self.calculate_shared_windows()
         for names, num_of_connections in full_connections_dict.items():
-            if num_of_connections > self.threshold:
+            if num_of_connections >= self.threshold:
                 self.people_connection_list.append(sorted(names))  # Ensure names are in alphabetical order
 
     def _to_json(self):
@@ -133,3 +133,10 @@ class ConnectionFinder:
         String representation of the connections in JSON format.
         """
         return self.get_json_format()
+
+    def get_list_of_connections(self):
+        """
+        Public function which outputs the list of the connection founded
+        :return:
+        """
+        return self.people_connection_list

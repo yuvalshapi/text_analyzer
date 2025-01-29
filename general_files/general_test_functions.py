@@ -1,7 +1,11 @@
 import pandas as pd
 import json
 import re
-
+# ANSI escape codes for colored output
+class Colors:
+    GREEN = '\033[92m'
+    RED = '\033[91m'
+    RESET = '\033[0m'
 
 def print_differences_and_find_sources(processed, expected, path="", sentences_file=None):
     """
@@ -65,3 +69,22 @@ def locate_sentence_in_file(sentences_file, index):
         print(f"Source sentence for discrepancy at index {index}: {raw_sentence}")
     except Exception as e:
         print(f"Error reading file {sentences_file}: {e}")
+
+def save_json(data, path, description):
+    """
+    Save JSON data to a file.
+    """
+    with open(path, 'w') as outfile:
+        json.dump(data, outfile, indent=4)
+    print(f"{description} saved to {path}")
+
+
+def compare_results(result, expected, description, file_set, source_file):
+    """
+    Compare the result with the expected result and print the outcome.
+    """
+    if result == expected:
+        print(f"{Colors.GREEN}Test {file_set} ({description}): SUCCESS{Colors.RESET}")
+    else:
+        print(f"{Colors.RED}Test {file_set} ({description}): FAIL{Colors.RESET}")
+        print_differences_and_find_sources(result, expected, sentences_file=source_file)
