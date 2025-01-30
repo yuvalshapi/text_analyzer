@@ -1,9 +1,7 @@
 import copy
-import pandas as pd
 import json
-from general_files import general_functions as gf
+from text_analayzer_project_final.general_files import general_functions as gf
 from task1.textprocessor import TextPreprocessor
-import os
 
 
 class NamesCounter:

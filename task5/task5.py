@@ -1,9 +1,6 @@
-import pandas as pd
 import json
-import re
-import task1.textprocessor as task1
 import task3.task3 as task3
-import general_files.general_functions as gf
+import text_analayzer_project_final.general_files.general_functions as gf
 
 class ContextFinder:
     def __init__(self,
