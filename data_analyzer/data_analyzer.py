@@ -133,6 +133,7 @@ class DataAnalyzer:
         kseq_in_dict = {}
 
         k_list = gf.load_kseqs_from_json(self.kseq_file_path)
+
         for kseq in k_list:
             input_kseq.append(gf.clean_text(kseq))  # Clean and store kseqs
 
@@ -152,8 +153,30 @@ class DataAnalyzer:
         return kseq_in_dict, input_kseq
 
     def kseqengine(self):
-        """ Identifies k-sequences in sentences and returns JSON output. """
-        found_kseq_dict = self._search_kseq()
+        """ Identifies only predefined k-sequences in sentences and returns JSON output. """
+        if not self.kseq_file_path:
+            raise ValueError("No k-sequence file path provided for Task 4.")
+
+        # Load k-sequences from JSON file
+        input_kseqs = gf.load_kseqs_from_json(self.kseq_file_path)
+        input_kseqs = [gf.clean_text(kseq) for kseq in input_kseqs]  # Clean input k-sequences
+
+        sentences_list = self.processed_data.get_processed_sentences()
+        found_kseq_dict = {}
+
+        # Search for only predefined k-sequences in the text
+        for kseq in input_kseqs:
+            for sentence in sentences_list:
+                str_sentence = ' '.join(sentence)  # Convert sentence list to a string
+                if kseq in str_sentence:  # Match exact k-sequence
+                    if kseq not in found_kseq_dict:
+                        found_kseq_dict[kseq] = set()  # Use a set to prevent duplicates
+                    found_kseq_dict[kseq].add(str_sentence)  # Add sentence to the set
+
+        # Convert sets to sorted lists
+        found_kseq_dict = {k: sorted(list(v)) for k, v in sorted(found_kseq_dict.items())}
+
+        # Format results using json_format_t4
         formatted_result = j_formats.json_format_t4(found_kseq_dict)
         return json.dumps(formatted_result, indent=4)
 
@@ -171,21 +194,23 @@ class DataAnalyzer:
 
         for name in sorted(names_sentences.keys()):
             kseq_set = set()  # Use a set to avoid duplicate K-Seqs
-            kseqs = []
-
             for sentence in names_sentences[name]:
-                sentence_list = sentence.split()  # Convert sentence into word list
+                sentence_list = sentence.split()  # Convert sentence into a list of words
 
+                # Ensure that all possible k-sequences (1 to maxk) are generated
                 for i in range(1, self.maxk + 1):
                     kseqs = gf.create_all_sublists(sentence_list, i)
-                    kseq_set.update(tuple(kseq) for kseq in kseqs)  # Add K-Seqs as tuples for uniqueness
+                    kseq_set.update(tuple(kseq) for kseq in kseqs)  # Ensure uniqueness
 
-            names_kseqs[name] = sorted(kseq_set)  # Convert set to sorted list
+            # Convert set to sorted list while ensuring sequences are correct
+            names_kseqs[name] = sorted([list(kseq) for kseq in kseq_set])
 
         return {name: kseqs for name, kseqs in names_kseqs.items() if kseqs}
 
     def find_context(self):
         """ Finds contextual K-Seqs for names and returns JSON output. """
         names_kseqs = self.prepare_kseqs()
+
+        # Format results using json_format_t5
         formatted_result = j_formats.json_format_t5(names_kseqs)
         return json.dumps(formatted_result, indent=4)

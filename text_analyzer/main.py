@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 
 import argparse
-import string
-import os
 import task1.textprocessor as tp
 import data_analyzer.data_analyzer as da
-import connection_finder.connection_finder as cf
+from data_analyzer import connection_finder as cf
+
 
 def readargs(args=None):
     parser = argparse.ArgumentParser(
