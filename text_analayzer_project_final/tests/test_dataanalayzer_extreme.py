@@ -7,8 +7,8 @@ from text_analayzer_project_final.data_analyzer.data_analyzer import DataAnalyze
 
 
 # Define test parameters
-BASE_DIR = os.path.join("2_examples")
-W_PATH = os.path.join("1_data", "data", "REMOVEWORDS.csv")
+BASE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "2_examples")
+W_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "1_data", "data", "REMOVEWORDS.csv")
 
 SEQ_LENGTHS = [3, 4, 5]  # Task 2 sequence lengths
 CONTEXT_SIZES = [3, 4, 5, 4]  # Task 5 context extraction sizes

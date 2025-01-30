@@ -7,8 +7,8 @@ from text_analayzer_project_final.connection_finder.connection_finder import Con
 
 
 # Define test parameters
-BASE_DIR = os.path.join("2_examples")
-W_PATH = os.path.join("1_data", "data", "REMOVEWORDS.csv")
+BASE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "2_examples")
+W_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "1_data", "data", "REMOVEWORDS.csv")
 
 # Define parameters for each task
 W_SIZES = [[4, 3, 5, 5], [5, 3, 5, 5], [3, 3, 3]]  # Window sizes for Task 6

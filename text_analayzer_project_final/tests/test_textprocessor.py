@@ -5,9 +5,8 @@ import text_analayzer_project_final.general_files.general_test_functions as gtf
 from text_analayzer_project_final.textprocessor.textprocessor import TextPreprocessor
 
 # Define test parameters (base directory and remove words file)
-BASE_DIR = os.path.join("2_examples", "Q1_examples")
-W_PATH = os.path.join("1_data", "data", "REMOVEWORDS.csv")
-
+BASE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "2_examples")
+W_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "1_data", "data", "REMOVEWORDS.csv")
 
 @pytest.mark.parametrize("file_set", [1, 2, 3])
 def test_text_preprocessor(file_set):
@@ -19,9 +18,9 @@ def test_text_preprocessor(file_set):
     print(f"\n=== Running Test for File Set {file_set} ===")
 
     # File paths for the current iteration
-    p_path = os.path.join(BASE_DIR, f"example_{file_set}", f"people_small_{file_set}.csv")
-    s_path = os.path.join(BASE_DIR, f"example_{file_set}", f"sentences_small_{file_set}.csv")
-    e_path = os.path.join(BASE_DIR, f"example_{file_set}", f"Q1_result{file_set}.json")
+    p_path = os.path.join(BASE_DIR,"Q1_examples", f"example_{file_set}", f"people_small_{file_set}.csv")
+    s_path = os.path.join(BASE_DIR, "Q1_examples",f"example_{file_set}", f"sentences_small_{file_set}.csv")
+    e_path = os.path.join(BASE_DIR, "Q1_examples",f"example_{file_set}", f"Q1_result{file_set}.json")
 
     # Load the expected JSON result
     with open(e_path, 'r') as file:

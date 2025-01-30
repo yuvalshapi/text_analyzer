@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 import argparse
-import task1.textprocessor as tp
-import data_analyzer.data_analyzer as da
-from data_analyzer import connection_finder as cf
+from text_analayzer_project_final.textprocessor import textprocessor
+from text_analayzer_project_final.connection_finder import connection_finder
+from text_analayzer_project_final.data_analyzer import data_analyzer
 
 
 def readargs(args=None):
@@ -75,14 +75,14 @@ def process_task(args):
     words_path = args.removewords
 
     # Process the text data
-    processed_data = tp.TextPreprocessor(s_path, name_path, words_path, is_preprocessed, int(args.task))
+    processed_data = textprocessor.TextPreprocessor(s_path, name_path, words_path, is_preprocessed, int(args.task))
 
     # Determine which class to use based on the task number
     task_num = int(args.task)
     if task_num == 1:
         return processed_data.get_json_format()
     if task_num in {2, 3, 4, 5}:
-        task_handler = da.DataAnalyzer(processed_data, args.maxk, args.qsek_query_path)
+        task_handler = data_analyzer.DataAnalyzer(processed_data, args.maxk, args.qsek_query_path)
         task_functions = {
             2: task_handler.sequence_counter,
             3: task_handler.names_counter,
@@ -91,7 +91,7 @@ def process_task(args):
         }
 
     elif task_num in {6, 7, 8}:
-        task_handler = cf.ConnectionFinder(processed_data, int(args.windowsize), int(args.threshold), args.fixed_length,
+        task_handler = connection_finder.ConnectionFinder(processed_data, int(args.windowsize), int(args.threshold), args.fixed_length,
                                            args.pairs)
         task_functions = {
             6: task_handler.find_connections,
