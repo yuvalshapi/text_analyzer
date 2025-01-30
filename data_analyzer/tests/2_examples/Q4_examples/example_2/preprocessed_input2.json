@@ -1,5 +1,5 @@
 {
-    "Question 6": {
+    "Question 1": {
         "Processed Sentences": [
             [
                 "karkaroff",
@@ -97,55 +97,6 @@
                 "lips"
             ]
         ],
-        "Processed Names": [
-            [
-                [
-                    "ignatia",
-                    "wildsmith"
-                ],
-                []
-            ],
-            [
-                [
-                    "ignatius",
-                    "prewett"
-                ],
-                []
-            ],
-            [
-                [
-                    "ignatius",
-                    "tuft"
-                ],
-                []
-            ],
-            [
-                [
-                    "ignotus",
-                    "peverell"
-                ],
-                []
-            ],
-            [
-                [
-                    "igor",
-                    "karkaroff"
-                ],
-                []
-            ],
-            [
-                [
-                    "illyius"
-                ],
-                []
-            ],
-            [
-                [
-                    "ingolfr",
-                    "iambic"
-                ],
-                []
-            ]
-        ]
+        "Processed Names": []
     }
 }

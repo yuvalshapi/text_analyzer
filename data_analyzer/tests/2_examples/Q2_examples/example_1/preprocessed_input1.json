@@ -1,5 +1,5 @@
 {
-    "Question 7": {
+    "Question 1": {
         "Processed Sentences": [
             [
                 "tuft",
@@ -487,56 +487,12 @@
                 "mother"
             ],
             [
-                "asdf",
-                "asdf",
-                "asdf",
-                "asdf",
-                "filler",
-                "sentence",
-                "asdf",
-                "ddfdf",
-                "dfdfdf",
-                "asdfasdf",
-                "dkdkdkdk"
-            ],
-            [
-                "asdf",
-                "otto",
-                "asdf",
-                "asdf",
-                "filler",
-                "sentence",
-                "asdf",
-                "ddfdf",
-                "dfdfdf",
-                "asdfasdf",
-                "dkdkdkdk"
-            ],
-            [
-                "asdf",
-                "asdf",
-                "harry",
-                "asdf",
-                "filler",
-                "sentence",
-                "asdf",
-                "ddfdf",
-                "dfdfdf",
-                "asdfasdf",
-                "dkdkdkdk"
-            ],
-            [
-                "asdf",
-                "asdf",
-                "asdf",
-                "asdf",
-                "filler",
-                "sentence",
-                "asdf",
-                "ddfdf",
-                "dfdfdf",
-                "asdfasdf",
-                "dkdkdkdk"
+                "room",
+                "held",
+                "sign",
+                "another",
+                "lived",
+                "house"
             ]
         ],
         "Processed Names": [
@@ -705,61 +661,9 @@
                         "quintus"
                     ],
                     [
-                        "quintus",
-                        "silly",
-                        "name"
+                        "quintusofthesillyname"
                     ]
                 ]
-            ],
-            [
-                [
-                    "harry",
-                    "potter"
-                ],
-                [
-                    [
-                        "lived"
-                    ],
-                    [
-                        "undesirable",
-                        "number"
-                    ],
-                    [
-                        "chosen"
-                    ],
-                    [
-                        "parry",
-                        "otter"
-                    ],
-                    [
-                        "chosen"
-                    ],
-                    [
-                        "mudbloods",
-                        "friend"
-                    ]
-                ]
-            ],
-            [
-                [
-                    "aberforth",
-                    "dumbledore"
-                ],
-                []
-            ],
-            [
-                [
-                    "hermione",
-                    "granger"
-                ],
-                []
-            ],
-            [
-                [
-                    "draco",
-                    "malfoy"
-                ],
-                []
             ]
         ]
     }
