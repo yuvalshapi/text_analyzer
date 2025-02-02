@@ -27,7 +27,7 @@ for task_folder, task_num, params, max_tests in TASKS:
 
 
 @pytest.mark.parametrize("task_folder, task_num, params, file_set", test_cases)
-def test_main_raw(task_folder, task_num, params, file_set):
+def test_main_raw(task_folder, task_num, params, file_set) -> None:
     """
     Test `process_task` in `main.py` using raw CSV/JSON input.
     """
