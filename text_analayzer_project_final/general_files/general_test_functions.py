@@ -1,13 +1,19 @@
 import pandas as pd
 import json
 import re
+from typing import Any, Dict, List, Optional, Union
+
 # ANSI escape codes for colored output
 class Colors:
     GREEN = '\033[92m'
     RED = '\033[91m'
     RESET = '\033[0m'
 
-def print_differences_and_find_sources(processed, expected, path="", sentences_file=None):
+
+def print_differences_and_find_sources(processed: Union[Dict[str, Any], List[Any], Any],
+                                       expected: Union[Dict[str, Any], List[Any], Any],
+                                       path: str = "",
+                                       sentences_file: Optional[str] = None) -> None:
     """
     Recursively compares two dictionaries or lists, prints detailed differences,
     and locates the source of discrepancies in the source file if applicable.
@@ -51,7 +57,7 @@ def print_differences_and_find_sources(processed, expected, path="", sentences_f
             print(f"  Expected:  {expected}")
 
 
-def locate_sentence_in_file(sentences_file, index):
+def locate_sentence_in_file(sentences_file: str, index: int) -> None:
     """
     Finds and prints the source of a discrepancy in the sentences file based on the index.
 
@@ -70,18 +76,29 @@ def locate_sentence_in_file(sentences_file, index):
     except Exception as e:
         print(f"Error reading file {sentences_file}: {e}")
 
-def save_json(data, path, description):
+
+def save_json(data: Any, path: str, description: str) -> None:
     """
     Save JSON data to a file.
+
+    :param data: The JSON-serializable data to save.
+    :param path: The file path where the JSON will be saved.
+    :param description: A description of the data being saved.
     """
     with open(path, 'w') as outfile:
         json.dump(data, outfile, indent=4)
     print(f"{description} saved to {path}")
 
 
-def compare_results(result, expected, description, file_set, source_file):
+def compare_results(result: Any, expected: Any, description: str, file_set: str, source_file: Optional[str]) -> None:
     """
     Compare the result with the expected result and print the outcome.
+
+    :param result: The actual result.
+    :param expected: The expected result.
+    :param description: A description of the test being performed.
+    :param file_set: A label for the test set.
+    :param source_file: Optional path to a source file for locating discrepancies.
     """
     if result == expected:
         print(f"{Colors.GREEN}Test {file_set} ({description}): SUCCESS{Colors.RESET}")

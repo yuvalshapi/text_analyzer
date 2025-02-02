@@ -1,6 +1,6 @@
 import pandas as pd
 import json
-import task1.textprocessor as tp
+import text_analayzer_project_final.textprocessor.textprocessor as tp
 import text_analayzer_project_final.general_files.general_functions as gf
 import text_analayzer_project_final.general_files.json_formats as j_formats
 
@@ -27,7 +27,7 @@ class ConnectionFinder:
             pc_data = pd.read_json(people_connections_path)
             self.pairs_to_check = pc_data[pc_data.columns[0]].tolist()
 
-    def _create_windows_dict(self):
+    def _create_windows_dict(self) -> dict:
         """
         Creates a dictionary where each person maps to the windows they appear in.
         A window is a list of consecutive sentences determined by the window size.
