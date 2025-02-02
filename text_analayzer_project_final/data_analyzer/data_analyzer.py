@@ -1,8 +1,9 @@
 import json
 import copy
-import task1.textprocessor as tp
+import text_analayzer_project_final.textprocessor.textprocessor as tp
 import text_analayzer_project_final.general_files.general_functions as gf
 import text_analayzer_project_final.general_files.json_formats as j_formats
+from typing import Optional, List, Dict, Tuple
 
 
 class DataAnalyzer:
@@ -18,127 +19,96 @@ class DataAnalyzer:
 
     def __init__(self,
                  processed_data: tp.TextPreprocessor,
-                 maxk: int = None,
-                 kseq_file_path: str = None):
+                 maxk: Optional[int] = None,
+                 kseq_file_path: Optional[str] = None) -> None:
         """
         Initializes the DataAnalyzer with processed text data.
-
-        Parameters:
-        ----------
-        processed_data : TextPreprocessor
-            An instance of TextPreprocessor containing preprocessed sentences.
-        maxk : int, optional
-            The maximum sequence length to analyze (default is None).
-        kseq_file_path : str, optional
-            Path to a file containing k-sequences (default is None).
         """
         self.processed_data = processed_data
         self.maxk = maxk
         self.kseq_file_path = kseq_file_path
 
-    def _count_occurrences(self):
+    def _count_occurrences(self) -> List[Dict[str, int]]:
         """
         Counts how many times sub-sequences (small parts of sentences) appear in the text.
-
-        Returns:
-        -------
-        list of dict
-            A list where each dictionary contains sequence counts for a specific length.
         """
-        list_of_dicts = []
+        list_of_dicts: List[Dict[str, int]] = []
 
         for k in range(1, self.maxk + 1):
-            dict_of_occurrences = {}
+            dict_of_occurrences: Dict[str, int] = {}
 
-            # Loop through each sentence in the dataset
             for sentence in self.processed_data.get_processed_sentences():
-                list_of_subs = gf.create_all_sublists(sentence, k)  # Generate k-length sublists
+                list_of_subs = gf.create_all_sublists(sentence, k)
 
-                # Count occurrences of each unique sublist
                 for sub in list_of_subs:
-                    key = ' '.join(sub)  # Convert list to string for dictionary storage
+                    key = ' '.join(sub)
                     dict_of_occurrences[key] = dict_of_occurrences.get(key, 0) + 1
 
-            # Store sorted occurrences for better readability
             sorted_dict = dict(sorted(dict_of_occurrences.items()))
             list_of_dicts.append(sorted_dict)
 
         return list_of_dicts
 
-    def sequence_counter(self):
+    def sequence_counter(self) -> str:
         """ Finds and counts sequences in sentences and returns as JSON. """
         list_of_dicts = self._count_occurrences()
         result_formatted = j_formats.json_format_t2(self.maxk, list_of_dicts)
         return json.dumps(result_formatted, indent=4)
 
-    def _appearances_counter(self):
+    def _appearances_counter(self) -> Tuple[Dict[str, int], Dict[str, List[str]]]:
         """
         Counts occurrences of names and their variations in sentences.
-
-        Returns:
-        -------
-        tuple(dict, dict)
-            - Dictionary of name occurrences.
-            - Dictionary mapping names to sentences where they appear.
         """
         sentences_list = self.processed_data.get_processed_sentences()
         names_dict = self.processed_data.get_dict_of_names()
-        app_dict = {}
-        person_sentences = {name: [] for name in names_dict.keys()}  # Initialize empty lists for names
+        app_dict: Dict[str, int] = {}
+        person_sentences: Dict[str, List[str]] = {name: [] for name in names_dict.keys()}
 
         for sentence in sentences_list:
-            sentence_str = " ".join(sentence)  # Convert sentence list to a single string
+            sentence_str = " ".join(sentence)
 
             for name in names_dict.keys():
-                num_of_apps = 0  # Counter for occurrences
-                name_variations = name.split() + names_dict[name]  # Get all variations of a name
-                temp_sentence_str = copy.deepcopy(sentence_str)  # Prevent modification of the original sentence
+                num_of_apps = 0
+                name_variations = name.split() + names_dict[name]
+                temp_sentence_str = copy.deepcopy(sentence_str)
 
-                # Count occurrences of name variations
                 for variation in name_variations:
                     count_app, _ = gf.count_and_remove(temp_sentence_str, variation)
                     num_of_apps += count_app
 
                 if num_of_apps > 0:
                     app_dict[name] = app_dict.get(name, 0) + num_of_apps
-                    if sentence_str not in person_sentences[name]:  # Avoid duplicate sentences
+                    if sentence_str not in person_sentences[name]:
                         person_sentences[name].append(sentence_str)
 
-        # Sort and remove names that didn't appear
         app_dict = {name: count for name, count in app_dict.items() if count > 0}
         app_dict = {name: app_dict[name] for name in sorted(app_dict.keys())}
         names_sentences = {name: person_sentences[name] for name in person_sentences.keys()}
 
         return app_dict, names_sentences
 
-    def names_counter(self):
+    def names_counter(self) -> str:
         """ Counts occurrences of names in sentences and returns JSON output. """
         app_dict, _ = self._appearances_counter()
         formatted_result = j_formats.json_format_t3(app_dict)
         return json.dumps(formatted_result, indent=4)
 
-    def _build_kseq_dict(self):
+    def _build_kseq_dict(self) -> Tuple[Dict[str, List[str]], List[str]]:
         """
         Builds a dictionary mapping k-sequences (K-Seqs) to sentences.
-
-        Returns:
-        -------
-        tuple(dict, list)
-            - Dictionary of k-sequences and their sentences.
-            - List of input k-sequences.
         """
         sentences_list = self.processed_data.get_processed_sentences()
-        input_kseq = []
-        kseq_in_dict = {}
+        input_kseq: List[str] = []
+        kseq_in_dict: Dict[str, List[str]] = {}
 
         k_list = gf.load_kseqs_from_json(self.kseq_file_path)
 
         for kseq in k_list:
-            input_kseq.append(gf.clean_text(kseq))  # Clean and store kseqs
+            input_kseq.append(gf.clean_text(kseq))
 
         for sentence in sentences_list:
-            str_sentence = ' '.join(sentence)  # Convert words list to string
-            sub_sentence = gf.generate_substrings(str_sentence)  # Generate substrings
+            str_sentence = ' '.join(sentence)
+            sub_sentence = gf.generate_substrings(str_sentence)
 
             for s in sub_sentence:
                 if s in kseq_in_dict:
@@ -147,69 +117,55 @@ class DataAnalyzer:
                     kseq_in_dict[s] = [str_sentence]
 
         for kseq in kseq_in_dict:
-            kseq_in_dict[kseq] = sorted(set(kseq_in_dict[kseq]))  # Remove duplicates
+            kseq_in_dict[kseq] = sorted(set(kseq_in_dict[kseq]))
 
         return kseq_in_dict, input_kseq
 
-    def kseqengine(self):
+    def kseqengine(self) -> str:
         """ Identifies only predefined k-sequences in sentences and returns JSON output. """
         if not self.kseq_file_path:
             raise ValueError("No k-sequence file path provided for Task 4.")
 
-        # Load k-sequences from JSON file
         input_kseqs = gf.load_kseqs_from_json(self.kseq_file_path)
-        input_kseqs = [gf.clean_text(kseq) for kseq in input_kseqs]  # Clean input k-sequences
+        input_kseqs = [gf.clean_text(kseq) for kseq in input_kseqs]
 
         sentences_list = self.processed_data.get_processed_sentences()
-        found_kseq_dict = {}
+        found_kseq_dict: Dict[str, List[str]] = {}
 
-        # Search for only predefined k-sequences in the text
         for kseq in input_kseqs:
             for sentence in sentences_list:
-                str_sentence = ' '.join(sentence)  # Convert sentence list to a string
-                if kseq in str_sentence:  # Match exact k-sequence
+                str_sentence = ' '.join(sentence)
+                if kseq in str_sentence:
                     if kseq not in found_kseq_dict:
-                        found_kseq_dict[kseq] = set()  # Use a set to prevent duplicates
-                    found_kseq_dict[kseq].add(str_sentence)  # Add sentence to the set
+                        found_kseq_dict[kseq] = set()
+                    found_kseq_dict[kseq].add(str_sentence)
 
-        # Convert sets to sorted lists
         found_kseq_dict = {k: sorted(list(v)) for k, v in sorted(found_kseq_dict.items())}
-
-        # Format results using json_format_t4
         formatted_result = j_formats.json_format_t4(found_kseq_dict)
         return json.dumps(formatted_result, indent=4)
 
-    def prepare_kseqs(self):
+    def prepare_kseqs(self) -> Dict[str, List[List[str]]]:
         """
         Generates k-sequences (K-Seqs) for each name based on where they appear.
-
-        Returns:
-        -------
-        dict
-            Dictionary mapping names to their found K-Seqs.
         """
         _, names_sentences = self._appearances_counter()
-        names_kseqs = {}
+        names_kseqs: Dict[str, List[List[str]]] = {}
 
         for name in sorted(names_sentences.keys()):
-            kseq_set = set()  # Use a set to avoid duplicate K-Seqs
+            kseq_set = set()
             for sentence in names_sentences[name]:
-                sentence_list = sentence.split()  # Convert sentence into a list of words
+                sentence_list = sentence.split()
 
-                # Ensure that all possible k-sequences (1 to maxk) are generated
                 for i in range(1, self.maxk + 1):
                     kseqs = gf.create_all_sublists(sentence_list, i)
-                    kseq_set.update(tuple(kseq) for kseq in kseqs)  # Ensure uniqueness
+                    kseq_set.update(tuple(kseq) for kseq in kseqs)
 
-            # Convert set to sorted list while ensuring sequences are correct
             names_kseqs[name] = sorted([list(kseq) for kseq in kseq_set])
 
         return {name: kseqs for name, kseqs in names_kseqs.items() if kseqs}
 
-    def find_context(self):
+    def find_context(self) -> str:
         """ Finds contextual K-Seqs for names and returns JSON output. """
         names_kseqs = self.prepare_kseqs()
-
-        # Format results using json_format_t5
         formatted_result = j_formats.json_format_t5(names_kseqs)
         return json.dumps(formatted_result, indent=4)
