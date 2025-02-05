@@ -1,6 +1,7 @@
 import string
 import re
 import pandas as pd
+import sys
 import json
 from typing import List, Tuple, Dict, Any, Optional, Union
 
@@ -115,7 +116,6 @@ def generate_substrings(input_string: str) -> List[str]:
 
     return substrings
 
-
 def load_kseqs_from_json(file_path: str) -> List[str]:
     """
     Load K-seqs from a JSON file and return them as a list of concatenated strings using pandas.
@@ -123,11 +123,20 @@ def load_kseqs_from_json(file_path: str) -> List[str]:
     :param file_path: Path to the JSON file.
     :return: List of strings where each string is a row of concatenated K-seq.
     """
-    df = pd.read_json(file_path)
+    try:
+        df = pd.read_json(file_path)
+    except (FileNotFoundError, PermissionError):
+        print(f"File '{file_path}' is invalid, try again.")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Unexpected error while opening '{file_path}': {e}")
+        sys.exit(1)
+
     first_column = df.iloc[:, 0]
     kseqs = first_column.apply(lambda row: " ".join(word.strip().lower() for word in row))
 
     return kseqs.tolist()
+
 
 
 def is_appear(list_of_sentences: List[List[str]], word_list: List[List[str]]) -> bool:

@@ -1,11 +1,22 @@
 import pandas as pd
 import json
+import sys
 import text_analayzer_project_final.textprocessor.textprocessor as tp
 import text_analayzer_project_final.general_files.general_functions as gf
 import text_analayzer_project_final.general_files.json_formats as j_formats
 
 
 class ConnectionFinder:
+    """
+    This class find connections between on a given processed data, according to user inputs
+
+    ### Methods:
+    - `_build_sentence_graph()`: Creates connections between sentences based on shared words.
+    - `_get_connected_components()`: Finds groups of connected sentences.
+    - `_sort_groups()`: Sorts sentence groups by size and alphabetical order.
+    - `group_sentences()`: Main function that organizes everything and returns the result.
+
+    """
     def __init__(self,
                  processed_data: tp.TextPreprocessor,
                  w_size: int,
@@ -23,8 +34,16 @@ class ConnectionFinder:
 
         # Not needed in Task 6
         if people_connections_path is not None:
-            # Load pairs to check
-            pc_data = pd.read_json(people_connections_path)
+            try:
+                # Load pairs to check
+                pc_data = pd.read_json(people_connections_path)
+            except (FileNotFoundError, PermissionError):
+                print(f"File '{people_connections_path}' is invalid, try again.")
+                sys.exit(1)
+            except Exception as e:
+                print(f"Unexpected error while opening '{people_connections_path}': {e}")
+                sys.exit(1)
+
             self.pairs_to_check = pc_data[pc_data.columns[0]].tolist()
 
     def _create_windows_dict(self) -> dict:
@@ -50,7 +69,7 @@ class ConnectionFinder:
 
         return dict(sorted(people_windows_dict.items()))
 
-    def calculate_shared_windows(self):
+    def calculate_shared_windows(self) -> dict:
         """Calculates the number of shared windows between each pair of people."""
         people_windows_dict = self._create_windows_dict()
         pair_count_dict = {}
@@ -69,7 +88,7 @@ class ConnectionFinder:
 
         return pair_count_dict
 
-    def _find_connections(self):
+    def _find_connections(self) -> list:
         """Finds all connections between people based on the threshold."""
         full_connections_dict = self.calculate_shared_windows()
         people_connections_list = []
@@ -80,12 +99,12 @@ class ConnectionFinder:
 
         return people_connections_list
 
-    def find_connections(self):
+    def find_connections(self) -> str:
         people_connections_list = self._find_connections()
         formatted_result = j_formats.json_format_t6(people_connections_list)
         return json.dumps(formatted_result, indent=4)
 
-    def _build_graph(self):
+    def _build_graph(self) -> dict:
         """Builds a graph (adjacency list) from the list of connections."""
         list_of_connections = self._find_connections()
         graph_of_connections = {}
@@ -104,7 +123,8 @@ class ConnectionFinder:
         return graph_of_connections
 
     def _check_pair_with_length(self, start: str, target: str) -> bool:
-        """Checks if a connection of exactly `self.fixed_len` exists between `start` and `target`."""
+        """Checks if a connection of exactly `self.fixed_len` exists between `start` and `target`.
+          using a recursive function(dfs) to go through the graph"""
         graph_of_connections = self._build_graph()
         if start not in graph_of_connections or target not in graph_of_connections:
             return False
@@ -141,15 +161,15 @@ class ConnectionFinder:
         while queue:
             current = queue.popleft()
             if current == target:
-                return True  # ✅ Found a connection
+                return True  #  Found  connection
 
             if current not in visited:
                 visited.add(current)
                 queue.extend(graph_of_connections.get(current, set()))
 
-        return False  # ❌ No connection found
+        return False  #No connection was found
 
-    def _check_connections_with_length(self):
+    def _check_connections_with_length(self) -> list:
         """Task 8: Checks all pairs in the list to see if they are connected in exactly `self.fixed_len` hops."""
         results_list = []
         self.pairs_to_check = [sorted(pair) for pair in self.pairs_to_check]
@@ -162,7 +182,7 @@ class ConnectionFinder:
 
         return results_list
 
-    def _check_any_connections(self):
+    def _check_any_connections(self) -> list:
         """Task 7: Checks all pairs for *any* connection (no hop limit)."""
         results_list = []
         self.pairs_to_check = [sorted(pair) for pair in self.pairs_to_check]
@@ -175,16 +195,79 @@ class ConnectionFinder:
 
         return results_list
 
-    def check_connections(self):
+    def check_connections(self) -> str:
         """
         Runs Task 7 or Task 8 based on whether `fixed_len` is set:
         - If `fixed_len` is None → Task 7 (find *any* connection).
         - If `fixed_len` is set → Task 8 (find connection with exactly `fixed_len` hops).
         """
         if self.fixed_len is None:
-            results_list = self._check_any_connections()  # ✅ Task 7
+            results_list = self._check_any_connections()  # Task 7
         else:
-            results_list = self._check_connections_with_length()  # ✅ Task 8
+            results_list = self._check_connections_with_length()  # Task 8
 
         formatted_results = j_formats.json_format7_8(results_list, self.processed_data.get_task_num())
         return json.dumps(formatted_results, indent=4)
+
+    def _build_sentence_graph(self):
+        """
+        Creates a dictionary where each sentence is a key (represented by its index),
+        and the value is a set of other sentence indices that are connected to it.
+
+        Two sentences are considered connected if they share at least `self.threshold` words.
+        """
+
+        sentences = self.processed_data.get_processed_sentences()
+        sentence_sets = [set(sentence) for sentence in sentences]
+        graph = {i: set() for i in range(len(sentences))}
+
+        for i in range(len(sentences)):
+            for j in range(i + 1, len(sentences)):
+                shared_words = sentence_sets[i] & sentence_sets[j]
+                if len(shared_words) >= self.threshold:
+                    graph[i].add(j)
+                    graph[j].add(i)
+
+        return graph
+
+    def _get_connected_components(self):
+        """
+        Finds connected sentences using DFs algorithm
+        """
+        graph = self._build_sentence_graph()
+        visited = set()
+        components = []
+
+        def dfs(node, component):
+            stack = [node]
+            while stack:
+                curr = stack.pop()
+                if curr not in visited:
+                    visited.add(curr)
+                    component.append(curr)
+                    stack.extend(graph[curr] - visited)
+
+        for node in graph:
+            if node not in visited:
+                component = []
+                dfs(node, component)
+                components.append(sorted(component))
+
+        sentences = self.processed_data.get_processed_sentences()
+        return [[sentences[idx] for idx in component] for component in components]
+
+    def group_sentences(self):
+        """
+        Main function for Task 9.
+        - Builds a graph.
+        - Finds connected sentence groups.
+        - Sorts and formats the output.
+        """
+        sentence_groups = self._get_connected_components()
+        #Sorting the groups according to their size(small to big)
+        sentence_groups.sort(key=lambda x: (len(x), x[0] if x else ""))
+        #sort alphabetical order for each size + add the group to the output structure
+        sorted_groups = [[f"Group {i + 1}", sorted(group)] for i, group in enumerate(sentence_groups)]
+
+        formatted_result = j_formats.json_format_9(sorted_groups)
+        return json.dumps(formatted_result, indent=4)

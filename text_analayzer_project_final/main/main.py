@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import sys
 from text_analayzer_project_final.textprocessor import textprocessor
 from text_analayzer_project_final.connection_finder import connection_finder
 from text_analayzer_project_final.data_analyzer import data_analyzer
@@ -59,6 +60,49 @@ def readargs(args=None):
     return parser.parse_args(args)
 
 
+def validate_args(args):
+    """
+    Ensures that all required arguments for each task are provided.
+    If a required argument is missing, prints an error and exits.
+    """
+    task_num = int(args.task)
+
+    # General checks
+    if not args.preprocessed and not args.sentences:
+        print("Error: Either --sentences or --preprocessed must be provided.")
+        sys.exit(1)
+
+    if not args.removewords:
+        print("Error: --removewords file is required.")
+        sys.exit(1)
+
+    # Task-specific checks
+    if task_num in {2, 5} and not args.maxk:
+        print(f"Error: --maxk is required for Task {task_num}.")
+        sys.exit(1)
+
+    if task_num == 4 and not args.qsek_query_path:
+        print("Error: --qsek_query_path is required for Task 4.")
+        sys.exit(1)
+
+    if task_num in {6, 7, 8}:
+        if not args.windowsize:
+            print(f"Error: --windowsize is required for Task {task_num}.")
+            sys.exit(1)
+        if not args.threshold:
+            print(f"Error: --threshold is required for Task {task_num}.")
+            sys.exit(1)
+
+    if task_num in {7, 8} and not args.pairs:
+        print(f"Error: --pairs is required for Task {task_num}.")
+        sys.exit(1)
+
+    if task_num == 8 and not args.fixed_length:
+        print("Error: --fixed_length is required for Task 8.")
+        sys.exit(1)
+    if  task_num > 8 or task_num < 1:
+        print(f"Error: Task {task_num} is not supported.")
+        sys.exit(1)
 def process_task(args):
     """
     Handles the execution of different tasks based on task_num.
@@ -69,6 +113,8 @@ def process_task(args):
     Returns:
         str: JSON output of the processed task.
     """
+    validate_args(args)  # ✅ Ensure all required arguments are present
+
     is_preprocessed = bool(args.preprocessed)
     s_path = args.preprocessed[0] if is_preprocessed else args.sentences
     name_path = args.names
@@ -99,15 +145,11 @@ def process_task(args):
             8: task_handler.check_connections,
         }
 
-    else:
-        print(f"Error: Task {task_num} is not supported.")
-        return
 
     # Execute the corresponding function if the task exists
     return task_functions[task_num]()
 
+
 if __name__ == '__main__':
     args = readargs()
     process_task(args)
-
-

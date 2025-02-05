@@ -111,3 +111,7 @@ def json_format7_8(list_of_connections: List[List[Union[str, bool]]], q_num: int
         }
     }
     return result
+
+def json_format_9(sorted_groups):
+    formatted_result = {"Question 9": {"group Matches": sorted_groups}}
+    return formatted_result

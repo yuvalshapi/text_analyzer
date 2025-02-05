@@ -70,5 +70,5 @@ def test_connection_finder_raw(task_folder, task_num, w_sizes, thresholds, fixed
     with open(expected_result_path, 'r') as file:
         expected_result = json.load(file)
 
-    # ✅ **Assertions for Pytest**
+    # Assertions for Pytest
     assert processed_result_raw == expected_result, f"Task {task_num}, File Set {file_set} (RAW) FAILED"

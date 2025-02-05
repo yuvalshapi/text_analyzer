@@ -8,21 +8,32 @@ from typing import Optional, List, Dict, Tuple
 
 class DataAnalyzer:
     """
-    A class for analyzing processed text data. It performs various tasks like:
-    - Counting occurrences of sequences.
-    - Finding name mentions in sentences.
-    - Identifying k-sequences (K-Seqs) in text.
-    - Extracting context for names.
+    A class for analyzing processed text data.
 
-    This class works with already processed text data.
+    This class performs various text analysis tasks, including:
+    - **Counting sequences**: Identifies recurring word sequences in the text.
+    - **Finding name mentions**: Detects how often names appear and in which sentences.
+    - **Identifying predefined k-sequences (K-Seqs)**: Finds specific sequences in the text.
+    - **Extracting context for names**: Determines word patterns associated with each name.
+
+    ### Methods:
+    - `sequence_counter()`: Returns a JSON representation of sequence occurrences.
+    - `names_counter()`: Returns a JSON report on name mentions.
+    - `kseqengine()`: Finds predefined k-sequences in the text.
+    - `find_context()`: Finds k-sequence patterns around names.
+
     """
-
     def __init__(self,
                  processed_data: tp.TextPreprocessor,
                  maxk: Optional[int] = None,
                  kseq_file_path: Optional[str] = None) -> None:
         """
-        Initializes the DataAnalyzer with processed text data.
+        Initializes the DataAnalyzer class and prepares it for analysis.
+
+        ### Parameters:
+        - `processed_data` (tp.TextPreprocessor): The processed text data to analyze.
+        - `maxk` (int, optional): The maximum sequence length to analyze. Defaults to None.
+        - `kseq_file_path` (str, optional): Path to a JSON file containing predefined k-sequences.
         """
         self.processed_data = processed_data
         self.maxk = maxk
